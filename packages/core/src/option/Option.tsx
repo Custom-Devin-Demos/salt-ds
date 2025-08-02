@@ -10,6 +10,7 @@ import {
   useMemo,
   useRef,
 } from "react";
+import { useAriaAnnouncer } from "../aria-announcer";
 import { CheckboxIcon } from "../checkbox";
 import {
   type OptionValue,
@@ -70,6 +71,8 @@ export const Option = forwardRef<HTMLDivElement, OptionProps>(
       listRef,
     } = useListControlContext();
 
+    const { announce } = useAriaAnnouncer();
+
     const disabled = disabledProp || listDisabled;
 
     const selected = selectedState.includes(value);
@@ -108,6 +111,12 @@ export const Option = forwardRef<HTMLDivElement, OptionProps>(
         return register(optionValue, optionRef.current);
       }
     }, [optionValue, id, register]);
+
+    useEffect(() => {
+      if (active && focusVisibleState) {
+        announce(selected ? "Selected" : "Not selected");
+      }
+    }, [active, focusVisibleState, selected, announce]);
 
     const handleRef = useForkRef(optionRef, ref);
 
