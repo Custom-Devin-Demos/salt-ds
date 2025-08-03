@@ -51,6 +51,10 @@ export type ListControlProps<Item> = {
    * Callback used to convert an option's `value` to a string. This is needed when the value is different to the display value or the value is not a string.
    */
   valueToString?: (item: Item) => string;
+  /**
+   * Optional function to announce changes for screen readers. Used for accessibility in multiselect scenarios.
+   */
+  announce?: (message: string) => void;
 };
 
 function findElementPosition(
@@ -121,6 +125,7 @@ export function useListControl<Item>(props: ListControlProps<Item>) {
     disabled,
     readOnly,
     valueToString = defaultValueToString,
+    announce,
   } = props;
 
   const [focusedState, setFocusedState] = useState(false);
@@ -141,6 +146,13 @@ export function useListControl<Item>(props: ListControlProps<Item>) {
   const setActive = (option?: OptionValue<Item>) => {
     if (option) {
       setActiveState(option);
+      
+      if (announce && multiselect) {
+        const isSelected = selectedState.includes(option.value);
+        const optionText = valueToString(option.value);
+        const selectionState = isSelected ? "selected" : "not selected";
+        announce(`${optionText}, ${selectionState}`);
+      }
     } else {
       setActiveState(undefined);
     }
