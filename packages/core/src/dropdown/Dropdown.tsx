@@ -22,6 +22,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { useAriaAnnouncer } from "../aria-announcer";
 import { useFormFieldProps } from "../form-field-context";
 import {
   ListControlContext,
@@ -165,6 +166,9 @@ export const Dropdown = forwardRef(function Dropdown<Item>(
   const required = formFieldRequired
     ? ["required", "asterisk"].includes(formFieldRequired)
     : requiredProp;
+
+  const { announce } = useAriaAnnouncer();
+
   const listControl = useListControl<Item>({
     open,
     defaultOpen,
@@ -174,6 +178,7 @@ export const Dropdown = forwardRef(function Dropdown<Item>(
     selected,
     onSelectionChange,
     valueToString,
+    announce: multiselect ? announce : undefined,
   });
 
   const {
